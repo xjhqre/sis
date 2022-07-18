@@ -1,0 +1,5 @@
+Pillow
+Flask
+tensorflow==2.0.0
+oss2
+protobuf-3.19.0
