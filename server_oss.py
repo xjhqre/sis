@@ -10,7 +10,8 @@ app = Flask(__name__)
 fe = FeatureExtractor()
 
 featurePath = "./static/feature"  # 存放被检索图片的特征
-imgPrefix = "https://chuchu-xjhqre.oss-cn-hangzhou.aliyuncs.com/img/"
+
+imgPrefix = "https://xxx.oss-cn-hangzhou.aliyuncs.com/img/"
 
 features = []
 img_paths = []
