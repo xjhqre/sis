@@ -20,6 +20,39 @@ for feature_path in Path(featurePath).glob("*.npy"):
 features = np.array(features)
 
 
+def description_search(query):
+    global es
+    results = es.search(
+        index="desearch",
+        body={
+            "size": 30,
+            "query": {
+                "match": {"description": query}
+            }
+        })
+    hitCount = results['hits']['total']
+    print(results)
+
+    if hitCount > 0:
+        if hitCount is 1:
+            print(str(hitCount), ' result')
+        else:
+            print(str(hitCount), 'results')
+        answers = []
+        max_score = results['hits']['max_score']
+
+        if max_score >= 0.35:
+            for hit in results['hits']['hits']:
+                if hit['_score'] > 0.5 * max_score:
+                    desc = hit['_source']['description']
+                    imgurl = hit['_source']['imgurl']
+                    name = hit['_source']['name']
+                    answers.append([imgurl, desc, name])
+    else:
+        answers = []
+    return answers
+
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
