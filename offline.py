@@ -1,15 +1,10 @@
+import glob
 import os
 
 from PIL import Image
 from elasticsearch import Elasticsearch
-from elasticsearch.helpers import bulk
 
 from feature_extractor import FeatureExtractor
-from pathlib import Path
-import numpy as np
-
-trainPath = "./static/img"  # 被检索的图片路径
-featurePath = "./static/feature"  # 存放被检索图片的特征
 
 es = Elasticsearch([{'host': '1.15.88.204', 'port': 9200}], timeout=3600)
 types = [".jpg", ".jpeg", ".gif", ".png", ".JPG", ".JPEG", ".GIF", ".PNG"]
@@ -17,31 +12,38 @@ errorPaths = []  # 存放提取错误的图片路径
 
 if __name__ == '__main__':
     fe = FeatureExtractor()
-
+    # trainPath = glob.glob('./static/img/*')  # 被检索的图片路径
+    trainPath = glob.glob('F:/ACG/出处归档/*')  # 被检索的图片路径
     cnt = 0
-    actions = []
 
-    for img_path in sorted(Path(trainPath).glob("*.*")):
-        if img_path.suffix not in types:
-            errorPaths.append(img_path)
+    for i, image in enumerate(trainPath):
+        (filename, extension) = os.path.splitext(image)
+        if extension not in types:
+            print("格式出错：" + image)
+            errorPaths.append(image)
             continue
 
-
         try:
-            feature = fe.extract(img=Image.open(img_path))
+            feature = fe.extract(img=Image.open(image))
+            feature = feature[::4]
+            # print(feature.tolist().__str__())
         except Exception as e:
             print("出现异常：" + str(e))
-            errorPaths.append(img_path)
+            errorPaths.append(image)
         else:
-            cnt += 1
-            print("当前图片：" + print(img_path) + " ---> " + str(cnt))
-            doc = {'imgurl': image, 'description': cap, 'name': name}
-            actions.append(doc)
-            feature_path = Path(featurePath) / (img_path.name + ".npy")
-            np.save(feature_path, feature)
+            name = image.rsplit("\\")[1]
+            # imgUrl = "./static/img/" + image.rsplit("\\")[1]  # OSS
+            imgUrl = "https://chuchu-xjhqre.oss-cn-hangzhou.aliyuncs.com/img/" + image.rsplit("\\")[1]  # OSS
 
+            doc = {'url': imgUrl, 'feature': feature,
+                   'name': name}
+
+            es.index("imgsearch", body=doc)  # 保存到elasticsearch
+
+            cnt += 1
+            print("当前图片：" + imgUrl + " ---> " + str(cnt))
 
     if len(errorPaths) != 0:
         print("Error: 提取失败的图片路径：")
-        for img_path in errorPaths:
-            print(img_path)
+        for image in errorPaths:
+            print(image)

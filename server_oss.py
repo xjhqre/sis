@@ -1,5 +1,7 @@
 import numpy as np
 from PIL import Image
+from elasticsearch import Elasticsearch
+
 from feature_extractor import FeatureExtractor
 from flask import Flask, request, render_template
 from pathlib import Path
@@ -9,20 +11,52 @@ app = Flask(__name__)
 # Read image features
 fe = FeatureExtractor()
 
-featurePath = "./static/feature"  # 存放被检索图片的特征
+es = Elasticsearch([{'host': '1.15.88.204', 'port': 9200}], timeout=3600)
 
-imgPrefix = "https://xxx.oss-cn-hangzhou.aliyuncs.com/img/"
+imgPrefix = "./static/img/"
+# imgPrefix = "https://xxx.oss-cn-hangzhou.aliyuncs.com/img/"
 
-features = []
-img_paths = []
-img_names = []
+def feature_search(query):
+    global es
+    print(query)
+    results = es.search(
+        index="imgsearch",
+        body={
+            "size": 30,
+            "query": {
+                "script_score": {
+                    "query": {
+                        "match_all": {}
+                    },
+                    "script": {
+                        "source": "cosineSimilarity(params.queryVector, doc['feature'])+1.0",
+                        "params": {
+                            "queryVector": query
+                        }
+                    }
+                }
+            }
+        })
+    hitCount = results['hits']['total']['value']
 
-for feature_path in Path(featurePath).glob("*.npy"):
-    features.append(np.load(feature_path))
-    img_paths.append(imgPrefix + feature_path.name[:-4].replace("#", "%23"))  # 图片名称里可能有#号，需转义
-    img_names.append(feature_path.stem)
+    if hitCount > 0:
+        if hitCount is 1:
+            print(str(hitCount), ' result')
+        else:
+            print(str(hitCount), 'results')
+        answers = []
+        max_score = results['hits']['max_score']
 
-features = np.array(features)
+        if max_score >= 0.35:
+            for hit in results['hits']['hits']:
+                if hit['_score'] > 0.5 * max_score:
+                    imgurl = hit['_source']['url']
+                    name = hit['_source']['name']
+                    answers.append([imgurl, name])
+    else:
+        answers = []
+    return answers
+
 
 
 @app.route('/', methods=['GET', 'POST'])
@@ -39,14 +73,12 @@ def index():
 
         # Run search
         query = fe.extract(img)
-        dists = np.linalg.norm(features - query, axis=1)  # L2 distances to features
-        ids = np.argsort(dists)[:30]  # Top 30 results
-        # scores返回结果，依次包含：图片相似度（越接近0就越相似）、图片路径（含名称）、图片名称
-        scores = [(dists[id], img_paths[id], img_names[id]) for id in ids]
+        query = query[::4]
+        answers = feature_search(query)
 
         return render_template('index.html',
                                query_path=uploaded_img_path,
-                               scores=scores)
+                               scores=answers)
     else:
         return render_template('index.html')
 
