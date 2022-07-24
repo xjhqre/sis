@@ -6,14 +6,13 @@ from elasticsearch import Elasticsearch
 
 from feature_extractor import FeatureExtractor
 
-es = Elasticsearch([{'host': '1.15.88.204', 'port': 9200}], timeout=3600)
+es = Elasticsearch([{'host': '', 'port': 9200}], timeout=3600)  # 修改这里
 types = [".jpg", ".jpeg", ".gif", ".png", ".JPG", ".JPEG", ".GIF", ".PNG"]
 errorPaths = []  # 存放提取错误的图片路径
 
 if __name__ == '__main__':
     fe = FeatureExtractor()
-    # trainPath = glob.glob('./static/img/*')  # 被检索的图片路径
-    trainPath = glob.glob('F:/ACG/出处归档/*')  # 被检索的图片路径
+    trainPath = glob.glob('./static/img/*')  # 被检索的图片路径
     cnt = 0
 
     for i, image in enumerate(trainPath):
@@ -32,9 +31,7 @@ if __name__ == '__main__':
             errorPaths.append(image)
         else:
             name = image.rsplit("\\")[1]
-            # imgUrl = "./static/img/" + image.rsplit("\\")[1]  # OSS
-            imgUrl = "https://chuchu-xjhqre.oss-cn-hangzhou.aliyuncs.com/img/" + image.rsplit("\\")[1]  # OSS
-
+            imgUrl = "./static/img/" + image.rsplit("\\")[1]
             doc = {'url': imgUrl, 'feature': feature,
                    'name': name}
 
