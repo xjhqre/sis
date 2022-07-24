@@ -1,10 +1,8 @@
-import numpy as np
 from PIL import Image
 from elasticsearch import Elasticsearch
 
 from feature_extractor import FeatureExtractor
 from flask import Flask, request, render_template
-from pathlib import Path
 
 app = Flask(__name__)
 
@@ -14,6 +12,7 @@ fe = FeatureExtractor()
 es = Elasticsearch([{'host': '1.15.88.204', 'port': 9200}], timeout=3600)
 
 imgPrefix = "https://xxx.oss-cn-hangzhou.aliyuncs.com/img/"
+
 
 def feature_search(query):
     global es
@@ -55,7 +54,6 @@ def feature_search(query):
     else:
         answers = []
     return answers
-
 
 
 @app.route('/', methods=['GET', 'POST'])

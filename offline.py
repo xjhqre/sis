@@ -1,5 +1,6 @@
 import glob
 import os
+import shutil
 
 from PIL import Image
 from elasticsearch import Elasticsearch
@@ -8,10 +9,24 @@ from feature_extractor import FeatureExtractor
 
 es = Elasticsearch([{'host': '1.15.88.204', 'port': 9200}], timeout=3600)
 types = [".jpg", ".jpeg", ".gif", ".png", ".JPG", ".JPEG", ".GIF", ".PNG"]
-errorPaths = []  # 存放提取错误的图片路径
+errorImg = []  # 存放提取错误的图片路径
+errorPath = "static/error/"
+
+
+def moveFile(srcfile, dstPath):  # 移动函数
+    if not os.path.isfile(srcfile):
+        print("%s not exist!" % (srcfile))
+    else:
+        fpath, fname = os.path.split(srcfile)  # 分离文件名和路径
+        if not os.path.exists(dstPath):
+            os.makedirs(dstPath)  # 创建路径
+        shutil.move(srcfile, dstPath + fname)  # 移动文件
+        print("move %s -> %s" % (srcfile, dstPath + fname))
+
 
 if __name__ == '__main__':
     fe = FeatureExtractor()
+    # trainPath = glob.glob('C:/Users/xjhqre/Desktop/新建文件夹/*')  # 被检索的图片路径
     trainPath = glob.glob('F:/ACG/出处归档/*')  # 被检索的图片路径
     cnt = 0
 
@@ -19,16 +34,19 @@ if __name__ == '__main__':
         (filename, extension) = os.path.splitext(image)
         if extension not in types:
             print("格式出错：" + image)
-            errorPaths.append(image)
+            errorImg.append(image)
+            moveFile(image, errorPath)
             continue
 
         try:
-            feature = fe.extract(img=Image.open(image))
+            imgFile = Image.open(image)
+            feature = fe.extract(img=Image)
             feature = feature[::4]
-            # print(feature.tolist().__str__())
         except Exception as e:
             print("出现异常：" + str(e))
-            errorPaths.append(image)
+            errorImg.append(image)
+            moveFile(image, errorPath)
+
         else:
             name = image.rsplit("\\")[1]
             imgUrl = "https://chuchu-xjhqre.oss-cn-hangzhou.aliyuncs.com/img/" + image.rsplit("\\")[1]  # OSS
@@ -40,8 +58,9 @@ if __name__ == '__main__':
 
             cnt += 1
             print("当前图片：" + imgUrl + " ---> " + str(cnt))
+            imgFile.close()
 
-    if len(errorPaths) != 0:
+    if len(errorImg) != 0:
         print("Error: 提取失败的图片路径：")
-        for image in errorPaths:
+        for image in errorImg:
             print(image)
