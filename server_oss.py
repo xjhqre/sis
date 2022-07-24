@@ -13,8 +13,7 @@ fe = FeatureExtractor()
 
 es = Elasticsearch([{'host': '1.15.88.204', 'port': 9200}], timeout=3600)
 
-imgPrefix = "./static/img/"
-# imgPrefix = "https://xxx.oss-cn-hangzhou.aliyuncs.com/img/"
+imgPrefix = "https://xxx.oss-cn-hangzhou.aliyuncs.com/img/"
 
 def feature_search(query):
     global es
