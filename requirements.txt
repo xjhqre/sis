@@ -1,6 +1,7 @@
 Pillow
 Flask
 tensorflow==2.0.0
-oss2
 protobuf-3.19.0
 elasticsearch==7.7.0
+torch==1.2.0
+torchvision==0.13.0
