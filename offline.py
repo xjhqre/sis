@@ -27,6 +27,7 @@ def moveFile(srcfile, dstPath):  # 移动函数
 if __name__ == '__main__':
     fe = FeatureExtractor()
     # trainPath = glob.glob('C:/Users/xjhqre/Desktop/新建文件夹/*')  # 被检索的图片路径
+    # trainPath = glob.glob('./static/img/*')  # 被检索的图片路径
     trainPath = glob.glob('F:/ACG/出处归档/*')  # 被检索的图片路径
     cnt = 0
 
@@ -35,30 +36,28 @@ if __name__ == '__main__':
         if extension not in types:
             print("格式出错：" + image)
             errorImg.append(image)
-            moveFile(image, errorPath)
+            # moveFile(image, errorPath)
             continue
 
         try:
-            imgFile = Image.open(image)
-            feature = fe.extract(img=Image)
-            feature = feature[::4]
+            feature = fe.exfeature(img=Image.open(image))
+            # feature = feature[::4]
         except Exception as e:
             print("出现异常：" + str(e))
             errorImg.append(image)
-            moveFile(image, errorPath)
-
+            # moveFile(image, errorPath)
         else:
             name = image.rsplit("\\")[1]
+            # imgUrl = "./static/img/" + image.rsplit("\\")[1]  # OSS
             imgUrl = "https://chuchu-xjhqre.oss-cn-hangzhou.aliyuncs.com/img/" + image.rsplit("\\")[1]  # OSS
 
             doc = {'url': imgUrl, 'feature': feature,
                    'name': name}
 
-            es.index("imgsearch", body=doc)  # 保存到elasticsearch
+            # es.index("imgsearch", body=doc)  # 保存到elasticsearch
 
             cnt += 1
             print("当前图片：" + imgUrl + " ---> " + str(cnt))
-            imgFile.close()
 
     if len(errorImg) != 0:
         print("Error: 提取失败的图片路径：")

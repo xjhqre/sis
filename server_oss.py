@@ -11,6 +11,7 @@ fe = FeatureExtractor()
 
 es = Elasticsearch([{'host': '1.15.88.204', 'port': 9200}], timeout=3600)
 
+# imgPrefix = "./static/img/"
 imgPrefix = "https://xxx.oss-cn-hangzhou.aliyuncs.com/img/"
 
 
@@ -69,8 +70,7 @@ def index():
         img.save(uploaded_img_path)
 
         # Run search
-        query = fe.extract(img)
-        query = query[::4]
+        query = fe.exfeature(img)
         answers = feature_search(query)
 
         return render_template('index.html',
