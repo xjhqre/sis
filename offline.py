@@ -25,8 +25,8 @@ def moveFile(srcfile, dstPath):  # 移动函数
 
 if __name__ == '__main__':
     fe = FeatureExtractor()
-    trainPath = glob.glob('./static/img/*')  # 被检索的图片路径
-    # trainPath = glob.glob('F:/ACG/出处归档/*')  # 被检索的图片路径
+    # trainPath = glob.glob('./static/img/*')  # 被检索的图片路径
+    trainPath = glob.glob('F:/ACG/出处归档/*')  # 被检索的图片路径
     cnt = 0
 
     for i, image in enumerate(trainPath):
@@ -47,8 +47,8 @@ if __name__ == '__main__':
             moveFile(image, errorPath)
         else:
             name = image.rsplit("\\")[1]
-            imgUrl = "./static/img/" + image.rsplit("\\")[1]  # OSS
-            # imgUrl = "https://chuchu-xjhqre.oss-cn-hangzhou.aliyuncs.com/img/" + image.rsplit("\\")[1]  # OSS
+            # imgUrl = "./static/img/" + image.rsplit("\\")[1]  # OSS
+            imgUrl = "https://chuchu-xjhqre.oss-cn-hangzhou.aliyuncs.com/img/" + image.rsplit("\\")[1]  # OSS
 
             doc = {'url': imgUrl, 'feature': feature,
                    'name': name}
