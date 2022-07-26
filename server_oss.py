@@ -1,25 +1,25 @@
+# -*- coding: utf-8 -*-
 from PIL import Image
 from elasticsearch import Elasticsearch
 
+import config
 from feature_extractor import FeatureExtractor
 from flask import Flask, request, render_template
 
 app = Flask(__name__)
+app.config['JSON_AS_ASCII'] = False
 
 # Read image features
 fe = FeatureExtractor()
 
 es = Elasticsearch([{'host': '1.15.88.204', 'port': 9200}], timeout=3600)
 
-# imgPrefix = "./static/img/"
-imgPrefix = "https://xxx.oss-cn-hangzhou.aliyuncs.com/img/"
-
 
 def feature_search(query):
     global es
     print(query)
     results = es.search(
-        index="imgsearch",
+        index=config.elasticsearch_index,
         body={
             "size": 30,
             "query": {
@@ -51,6 +51,7 @@ def feature_search(query):
                 if hit['_score'] > 0.5 * max_score:
                     imgurl = hit['_source']['url']
                     name = hit['_source']['name']
+                    imgurl = imgurl.replace("#", "%23")
                     answers.append([imgurl, name])
     else:
         answers = []
@@ -74,7 +75,7 @@ def index():
         answers = feature_search(query)
 
         return render_template('index.html',
-                               query_path=uploaded_img_path,
+                               query_path=uploaded_img_path.replace("#", "%23"),
                                scores=answers)
     else:
         return render_template('index.html')

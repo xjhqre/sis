@@ -2,6 +2,7 @@
 <html>
 <head>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <meta charset="utf-8" name="referrer" content="never">
 </head>
 <body>
 <div class="container">
@@ -12,17 +13,24 @@
     </form>
     <h2>Query:</h2>
     {% if query_path %}
-        <img src="{{ query_path }}" width="300px">
+{#        <img src="{{ query_path }}" width="300px">#}
     {% endif %}
     <h2>Results:</h2>
     {% for score in scores %}
         <figure style="float: left; margin-right: 20px; margin-bottom: 20px;">
             <img src="{{ score[0] }}" height="200px">
+            <p>{{ score[0] }}</p>
             <figcaption>{{ score[1] }}</figcaption>
         </figure>
     {% endfor %}
 </div>
 </body>
+<script>
+    var data = document.getElementById('dataid').getAttribute('d');//绑定以获取data值
+    dataJson = JSON.parse(data);
+    console.log(dataJson.name)
+    console.log(dataJson.num)
+</script>
 </html>
 
 
