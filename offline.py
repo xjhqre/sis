@@ -7,7 +7,11 @@ from elasticsearch import Elasticsearch
 import config
 from feature_extractor import FeatureExtractor
 
-es = Elasticsearch([{'host': '1.15.88.204', 'port': 9200}], timeout=3600)
+'''
+    提取图片特征向量上传阿里云OSS
+'''
+
+es = Elasticsearch([{'host': config.oss_url, 'port': 9200}], timeout=3600)
 
 errorImg = []  # 存放提取错误的图片路径
 errorPath = "static/error/"
@@ -33,7 +37,9 @@ if __name__ == '__main__':
 
     for i, image in enumerate(trainPath):
         (filename, extension) = os.path.splitext(image)
-        if extension not in config.types:
+        if extension == 'ini':
+            continue
+        elif extension not in config.types:
             print("格式出错：" + image)
             errorImg.append(image)
             moveFile(image, errorPath)
@@ -42,6 +48,7 @@ if __name__ == '__main__':
         try:
             feature = fe.execute(image)
         except Exception as e:
+
             print("出现异常：" + str(e))
             errorImg.append(image)
             moveFile(image, errorPath)

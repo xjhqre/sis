@@ -8,3 +8,5 @@ types = [".jpg", ".jpeg", ".gif", ".png", ".JPG", ".JPEG", ".GIF", ".PNG"]
 
 # elasticsearch_index = "test"
 elasticsearch_index = "imgsearch"
+
+oss_url = '1.15.88.204'
