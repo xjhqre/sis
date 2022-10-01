@@ -6,6 +6,10 @@ import config
 from feature_extractor import FeatureExtractor
 from flask import Flask, request, render_template
 
+'''
+    以图搜图服务
+'''
+
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 
