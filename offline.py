@@ -11,7 +11,7 @@ from feature_extractor import FeatureExtractor
     提取图片特征向量上传阿里云OSS
 '''
 
-es = Elasticsearch([{'host': config.oss_url, 'port': 9200}], timeout=3600)
+es = Elasticsearch([{'host': config.elasticsearch_url, 'port': config.elasticsearch_port}], timeout=3600)
 
 errorImg = []  # 存放提取错误的图片路径
 errorPath = "static/error/"

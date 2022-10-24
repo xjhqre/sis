@@ -1,12 +1,16 @@
 train_pic_path = 'F:/ACG/出处归档/*'
 # train_pic_path = './static/img/*'
 
+# 图片库地址
 # pic_url = "./static/img/"
-pic_url = "https://chuchu-xjhqre.oss-cn-hangzhou.aliyuncs.com/img/"
+pic_url = "your address"
 
 types = [".jpg", ".jpeg", ".gif", ".png", ".JPG", ".JPEG", ".GIF", ".PNG"]
 
+# elasticsearch索引
 # elasticsearch_index = "test"
-elasticsearch_index = "imgsearch"
+elasticsearch_index = "img"
 
-oss_url = '1.15.88.204'
+# elasticsearch ip和port
+elasticsearch_url = 'your address'
+elasticsearch_port = 9200

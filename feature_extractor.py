@@ -1,6 +1,6 @@
 from keras_applications.resnet50 import ResNet50
-from tensorflow.keras.preprocessing import image
-from tensorflow.keras.applications.vgg16 import preprocess_input
+from keras.preprocessing import image
+from keras.applications.resnet50 import preprocess_input
 import numpy as np
 
 from tensorflow.python import keras
