@@ -16,12 +16,12 @@ app.config['JSON_AS_ASCII'] = False
 # Read image features
 fe = FeatureExtractor()
 
-es = Elasticsearch([{'host': '1.15.88.204', 'port': 9200}], timeout=3600)
+es = Elasticsearch([{'host': config.elasticsearch_url, 'port': config.elasticsearch_port}], timeout=3600)
 
 
 def feature_search(query):
     global es
-    print(query)
+    # print(query)
     results = es.search(
         index=config.elasticsearch_index,
         body={
@@ -43,10 +43,10 @@ def feature_search(query):
     hitCount = results['hits']['total']['value']
 
     if hitCount > 0:
-        if hitCount is 1:
-            print(str(hitCount), ' result')
-        else:
-            print(str(hitCount), 'results')
+        # if hitCount is 1:
+            # print(str(hitCount), ' result')
+        # else:
+            # print(str(hitCount), 'results')
         answers = []
         max_score = results['hits']['max_score']
 
@@ -69,9 +69,9 @@ def index():
 
         # Save query image
         img = Image.open(file.stream)  # PIL image
-        print(file.filename)
+        # print(file.filename)
         uploaded_img_path = "static/uploaded/" + file.filename
-        print(uploaded_img_path)
+        # print(uploaded_img_path)
         img.save(uploaded_img_path)
 
         # Run search
