@@ -1,0 +1,27 @@
+# 创建索引结构
+PUT imgsearch
+{
+  "mappings": {
+    "properties": {
+      "feature": {
+        "type": "dense_vector",
+        "dims": 1024
+      },
+      "url": {
+        "type": "keyword"
+      },
+      "name": {
+        "type": "keyword"
+      }
+    }
+  }
+}
+
+# 删除索引数据
+DELETE imgsearch
+
+# 查询索引数据
+GET imgsearch/_search
+
+# 查询索引
+GET imgsearch
