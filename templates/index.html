@@ -7,8 +7,13 @@
 <body>
 <div class="container">
     <h1>Simple image search engine</h1>
-    <form method="POST" enctype="multipart/form-data">
+    <form action="/search" method="POST" enctype="multipart/form-data">
         <input type="file" name="query_img"><br>
+        <input type="submit">
+    </form>
+    <h1>上传图片</h1>
+    <form action="/upload" method="POST" enctype="multipart/form-data">
+        <input type="file" name="upload_img"><br>
         <input type="submit">
     </form>
     <h2>Query:</h2>
@@ -26,10 +31,10 @@
 </div>
 </body>
 <script>
-    var data = document.getElementById('dataid').getAttribute('d');//绑定以获取data值
-    dataJson = JSON.parse(data);
-    console.log(dataJson.name)
-    console.log(dataJson.num)
+    {#var data = document.getElementById('dataid').getAttribute('d');//绑定以获取data值#}
+    {#dataJson = JSON.parse(data);#}
+    {#console.log(dataJson.name)#}
+    {#console.log(dataJson.num)#}
 </script>
 </html>
 

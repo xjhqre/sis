@@ -5,13 +5,16 @@ import shutil
 from elasticsearch import Elasticsearch
 
 import config
+from aes import aesDecrypt
 from feature_extractor import FeatureExtractor
 
 '''
-    提取图片特征向量上传阿里云OSS
+    提取本地图片特征向量上传阿里云OSS
 '''
 
-es = Elasticsearch([{'host': config.elasticsearch_url, 'port': config.elasticsearch_port}], timeout=3600)
+elasticsearch_url = aesDecrypt(os.getenv("aesKey"), config.elasticsearch_url)
+elasticsearch_port = aesDecrypt(os.getenv("aesKey"), config.elasticsearch_port)
+es = Elasticsearch([{'host': elasticsearch_url, 'port': elasticsearch_port}], timeout=3600)
 
 errorImg = []  # 存放提取错误的图片路径
 errorPath = "static/error/"

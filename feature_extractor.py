@@ -1,11 +1,9 @@
-from keras_applications.resnet50 import ResNet50
-from tensorflow.keras.preprocessing import image
-from tensorflow.keras.applications.resnet50 import preprocess_input
-import numpy as np
-
-from tensorflow.python import keras
 from tensorflow.python.keras.backend import set_session
-
+from keras_applications.resnet50 import ResNet50
+from keras.preprocessing import image
+from keras.applications.resnet50 import preprocess_input
+from tensorflow.python import keras
+import numpy as np
 import tensorflow as tf
 from numpy import linalg as LA
 
