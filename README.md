@@ -4,3 +4,14 @@
 elasticsearch 索引构建请参考 elasticsearch.txt 文件
 
 在 config.py 中修改配置
+
+## 使用说明
+安装 elasticsearch7.2 版本或以上
+
+开通阿里云OSS
+
+配置 config.py
+
+offline.py：训练本地文件夹里的图片，上传到阿里云OSS和elasticsearch
+
+searchService.py：flask服务，支持以图搜搜和图片上传功能
