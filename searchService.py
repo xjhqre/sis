@@ -117,33 +117,33 @@ def search():
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
     if request.method == 'POST':
-        file = request.files['upload_img']
+        for file in request.files.getlist('upload_img'):
+            name = file.filename
 
-        name = file.filename
+            # Save query image
+            img = Image.open(file.stream)  # PIL image
+            # print(file.filename)
+            uploaded_img_path = config.save_path + file.filename
+            # print(uploaded_img_path)
+            img.save(uploaded_img_path)
 
-        # Save query image
-        img = Image.open(file.stream)  # PIL image
-        # print(file.filename)
-        uploaded_img_path = config.save_path + file.filename
-        # print(uploaded_img_path)
-        img.save(uploaded_img_path)
+            feature = fe.execute(uploaded_img_path)
 
-        feature = fe.execute(uploaded_img_path)
+            # 上传到OSS，返回图片地址   test前不能加 /
+            resp = bucket.put_object_from_file("test/" + name, config.save_path + name).resp
 
-        # test前不能加 /
-        resp = bucket.put_object_from_file("test/" + name, config.save_path + name).resp
+            imgUrl = resp.response.url.replace("%2F", "/")
 
-        imgUrl = resp.response.url.replace("%2F", "/")
+            # 上传es
+            doc = {'name': name, 'feature': feature, 'url': imgUrl}
+            es.index(config.elasticsearch_index, body=doc)  # 保存到elasticsearch
 
-        # 上传es
-        doc = {'name': name, 'feature': feature, 'url': imgUrl}
-        es.index(config.elasticsearch_index, body=doc)  # 保存到elasticsearch
+            # 删除本地图片
+            if os.path.exists(uploaded_img_path):
+                os.remove(uploaded_img_path)
+            else:
+                print('删除图片失败:', uploaded_img_path)
 
-        # 删除本地图片
-        if os.path.exists(uploaded_img_path):
-            os.remove(uploaded_img_path)
-        else:
-            print('删除图片失败:', uploaded_img_path)
         return render_template('index.html')
     else:
         return render_template('index.html')

@@ -15,3 +15,6 @@ elasticsearch 索引构建请参考 elasticsearch.txt 文件
 offline.py：训练本地文件夹里的图片，上传到阿里云OSS和elasticsearch
 
 searchService.py：flask服务，支持以图搜搜和图片上传功能
+
+## 提示
+不保证上传图片名称唯一，请确认上传图片名称不重复，防止覆盖
