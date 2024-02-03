@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import sys
 
 import numpy as np
 # -*- coding: utf-8 -*-
@@ -19,7 +20,16 @@ app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 
 # es连接
-es = Elasticsearch([{'host': config.elasticsearch_url, 'port': config.elasticsearch_port}], timeout=3600)
+es = Elasticsearch([{'host': config.elasticsearch_url, 'port': config.elasticsearch_port}], timeout=10000)
+print(config.elasticsearch_url)
+print(config.elasticsearch_port)
+
+# 检查是否成功连接
+if es.ping():
+    print("elasticsearch连接成功")
+else:
+    print("elasticsearch连接失败")
+    sys.exit()
 
 # 阿里云OSS
 # 阿里云账号AccessKey拥有所有API的访问权限，风险很高。强烈建议您创建并使用RAM用户进行API访问或日常运维，请登录RAM控制台创建RAM用户。
@@ -31,7 +41,7 @@ bucket = oss2.Bucket(auth, config.EndPoint, config.bucket)
 
 def feature_search(query):
     global es
-    # print(query)
+    print(query.size)
     results = es.search(
         index=config.elasticsearch_index,
         body={
@@ -92,6 +102,7 @@ def search():
 
         # Run search
         query = sentence_transformer_utils.extract(uploaded_img_path)
+        query = np.array(query).flatten()
         answers = feature_search(query)
 
         # 删除本地图片
@@ -123,7 +134,6 @@ def upload():
 
             feature = sentence_transformer_utils.extract(uploaded_img_path)
             feature = np.array(feature).flatten()
-            print(feature)
 
             # 上传到OSS，返回图片地址   test前不能加 /
             resp = bucket.put_object_from_file("test/" + name, config.root_path + '/static/uploaded/' + name).resp
