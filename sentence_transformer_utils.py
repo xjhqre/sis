@@ -1,69 +1,82 @@
 import glob
 import os
-import pickle
-import time
+import shutil
 
 import torch
 from PIL import Image
-from sentence_transformers import SentenceTransformer, util
-from src.config import config
-from src.config.config import config_instance
-from src.exception.no_feature_file_exception import NoFeatureFileException
-from src.exception.no_feature_path_exception import NoFeaturePathException
+from elasticsearch import Elasticsearch
+from sentence_transformers import SentenceTransformer
+
+import config
 
 torch.set_num_threads(4)
 
-model_name_or_path = ""
-if os.path.exists(config.model_path):
-    model_name_or_path = config.model_path
-else:
-    model_name_or_path = "clip-ViT-B-32"
-model = SentenceTransformer(model_name_or_path)
-
-
-# 存储张量
-def dump(img_names, img_emb):
-    if not os.path.exists(config_instance.get_feature_path()):
-        os.makedirs(config_instance.get_feature_path())
-    with open(config_instance.get_feature_path() + str(int(time.time())) + ".pickle", 'wb') as fOut:
-        pickle.dump((img_names, img_emb), fOut)
+model = SentenceTransformer("clip-ViT-B-32")
 
 
 # 提取特征方法
 def extract(img_path):
     img = Image.open(img_path)
-    emb = model.encode([img], batch_size=1, convert_to_tensor=True, show_progress_bar=False)
+    emb = model.encode([img], batch_size=1, convert_to_tensor=False, show_progress_bar=False)
     img.close()
     return emb
 
 
-# 搜索图片
-def search(query, k=None):
-    # 默认参数值是在函数定义时计算的，而不是在运行时计算的
-    if k is None:
-        k = int(config_instance.get_result_count())
-    if not os.path.exists(config_instance.get_feature_path()):
-        raise NoFeaturePathException
+'''
+    提取本地图片特征向量上传阿里云OSS
+'''
 
-    img_names = []
-    img_emb = None
-    feature_list = list(glob.glob(config_instance.get_feature_path() + "*"))
-    if len(feature_list) == 0:
-        raise NoFeatureFileException
+es = Elasticsearch([{'host': config.elasticsearch_url, 'port': config.elasticsearch_port}], timeout=3600)
 
-    for feature_path in feature_list:
-        with open(feature_path, 'rb') as fIn:
-            names, emb = pickle.load(fIn)
-            img_names.extend(names)
-            if img_emb is None:
-                img_emb = emb
-            else:
-                img_emb = torch.concat((img_emb, emb), dim=0)
+errorImg = []  # 存放提取错误的图片路径
+errorPath = "static/error/"
 
-    img = Image.open(query)
-    query_emb = model.encode([img], batch_size=1, convert_to_tensor=True, show_progress_bar=False)
-    img.close()
 
-    hits = util.semantic_search(query_emb, img_emb, top_k=k)[0]
+def moveFile(srcfile, dstPath):  # 移动函数
+    if not os.path.isfile(srcfile):
+        print("%s not exist!" % (srcfile))
+    else:
+        fpath, fname = os.path.split(srcfile)  # 分离文件名和路径
+        if not os.path.exists(dstPath):
+            os.makedirs(dstPath)  # 创建路径
+        shutil.move(srcfile, dstPath + fname)  # 移动文件
+        print("move %s -> %s" % (srcfile, dstPath + fname))
 
-    return [img_names[hit['corpus_id']] for hit in hits]
+
+if __name__ == '__main__':
+    trainPath = glob.glob(config.train_pic_path)  # 被检索的图片路径
+    cnt = 0
+
+    for i, image in enumerate(trainPath):
+        (filename, extension) = os.path.splitext(image)
+        if extension == 'ini':
+            continue
+        elif extension not in config.types:
+            print("格式出错：" + image)
+            errorImg.append(image)
+            moveFile(image, errorPath)
+            continue
+
+        try:
+            feature = extract(image)
+        except Exception as e:
+
+            print("出现异常：" + str(e))
+            errorImg.append(image)
+            moveFile(image, errorPath)
+        else:
+            name = image.rsplit("\\")[1]
+            imgUrl = config.pic_url + image.rsplit("\\")[1]  # OSS
+
+            doc = {'url': imgUrl, 'feature': feature,
+                   'name': name}
+
+            es.index(config.elasticsearch_index, body=doc)  # 保存到elasticsearch
+
+            cnt += 1
+            print("当前图片：" + imgUrl + " ---> " + str(cnt))
+
+    if len(errorImg) != 0:
+        print("Error: 提取失败的图片路径：")
+        for image in errorImg:
+            print(image)

@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 import os
 
-from PIL import Image
-from elasticsearch import Elasticsearch
+import numpy as np
 # -*- coding: utf-8 -*-
 import oss2
-import config
-from aes import aesDecrypt
-from feature_extractor import FeatureExtractor
+from PIL import Image
+from elasticsearch import Elasticsearch
 from flask import Flask, request, render_template
+
+import config
+import sentence_transformer_utils
 
 '''
     以图搜图服务
@@ -17,19 +18,12 @@ from flask import Flask, request, render_template
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 
-# Read image features
-fe = FeatureExtractor()
-
 # es连接
-elasticsearch_url = aesDecrypt(os.getenv("aesKey"), config.elasticsearch_url)
-elasticsearch_port = aesDecrypt(os.getenv("aesKey"), config.elasticsearch_port)
-es = Elasticsearch([{'host': elasticsearch_url, 'port': elasticsearch_port}], timeout=3600)
+es = Elasticsearch([{'host': config.elasticsearch_url, 'port': config.elasticsearch_port}], timeout=3600)
 
 # 阿里云OSS
 # 阿里云账号AccessKey拥有所有API的访问权限，风险很高。强烈建议您创建并使用RAM用户进行API访问或日常运维，请登录RAM控制台创建RAM用户。
-AccessKeyId = aesDecrypt(os.getenv("aesKey"), config.AccessKeyId)
-AccessKeySecret = aesDecrypt(os.getenv("aesKey"), config.AccessKeySecret)
-auth = oss2.Auth(AccessKeyId, AccessKeySecret)
+auth = oss2.Auth(config.AccessKeyId, config.AccessKeySecret)
 # yourEndpoint填写Bucket所在地域对应的Endpoint。以华东1（杭州）为例，Endpoint填写为https://oss-cn-hangzhou.aliyuncs.com。
 # 填写Bucket名称。
 bucket = oss2.Bucket(auth, config.EndPoint, config.bucket)
@@ -41,7 +35,7 @@ def feature_search(query):
     results = es.search(
         index=config.elasticsearch_index,
         body={
-            "size": 30,
+            "size": config.result_count,
             "query": {
                 "script_score": {
                     "query": {
@@ -97,7 +91,7 @@ def search():
         img.save(uploaded_img_path)
 
         # Run search
-        query = fe.execute(uploaded_img_path)
+        query = sentence_transformer_utils.extract(uploaded_img_path)
         answers = feature_search(query)
 
         # 删除本地图片
@@ -123,14 +117,16 @@ def upload():
             # Save query image
             img = Image.open(file.stream)  # PIL image
             # print(file.filename)
-            uploaded_img_path = config.save_path + file.filename
+            uploaded_img_path = config.root_path + '/static/uploaded/' + file.filename
             # print(uploaded_img_path)
             img.save(uploaded_img_path)
 
-            feature = fe.execute(uploaded_img_path)
+            feature = sentence_transformer_utils.extract(uploaded_img_path)
+            feature = np.array(feature).flatten()
+            print(feature)
 
             # 上传到OSS，返回图片地址   test前不能加 /
-            resp = bucket.put_object_from_file("test/" + name, config.save_path + name).resp
+            resp = bucket.put_object_from_file("test/" + name, config.root_path + '/static/uploaded/' + name).resp
 
             imgUrl = resp.response.url.replace("%2F", "/")
 
