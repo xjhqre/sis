@@ -34,10 +34,14 @@ elasticsearch 索引构建请参考 elasticsearch.txt 文件
 
 ### 运行步骤
 
-1、拉取镜像
+1、拉取镜像或者自己打包
 
 ```shell
 docker pull xjhqre/sis:v1.0
+```
+
+```shell
+docker build . -t xjhqre/sis:v1.0
 ```
 
 2、运行容器
@@ -56,6 +60,4 @@ docker run -d -p 5000:5000 \
 https://huggingface.co/sentence-transformers/clip-ViT-B-32/tree/main
 下载所有文件，将文件夹复制到docker容器中，地址与model_path对应，例如-e model_path=/opt/model
 
-> 镜像打包指令：docker build . -t xjhqre/sis:v1.0
->
 > 镜像大小大约四个多G，容器运行内存大约1.8G
