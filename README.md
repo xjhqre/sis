@@ -47,3 +47,5 @@ docker run -d -p 5000:5000 --name sis xjhqre/sis:v1.0
 如果运行后报错模型下载不了，可以手动到
 https://huggingface.co/sentence-transformers/clip-ViT-B-32/tree/main
 下载所有文件，将文件夹复制到docker容器中，地址与model_path对应
+
+> 镜像大小大约四个多G，容器运行内存大约1.5G
