@@ -12,7 +12,13 @@ elasticsearch 索引构建请参考 elasticsearch.txt 文件
 
 ## 使用说明
 
-1、在启动配置中添加以下四个参数
+1、在启动配置中添加以下五个参数
+
+* AccessKeyId：必填
+* AccessKeySecret：必填
+* elasticsearch_url：elasticsearch地址（必填）
+* elasticsearch_port：elasticsearch端口（必填）
+* model_path：模型地址（可选）
 
 ![1](README.assets/1.png)
 
@@ -35,11 +41,9 @@ docker build . -t xjhqre/sis:v1.0
 2、运行容器
 
 ```shell
-docker run -d -p 5000:5000 --name sis 镜像id
+docker run -d -p 5000:5000 --name sis xjhqre/sis:v1.0
 ```
 
 如果运行后报错模型下载不了，可以手动到
 https://huggingface.co/sentence-transformers/clip-ViT-B-32/tree/main
-下载所有文件，并放入名为models--sentence-transformers--clip-ViT-B-32的文件夹。
-再将此文件夹复制到docker容器中：
-docker cp models--sentence-transformers--clip-ViT-B-32/ sis:/root/.cache/huggingface/hub/
+下载所有文件，将文件夹复制到docker容器中，地址与model_path对应

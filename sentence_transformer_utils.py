@@ -12,7 +12,7 @@ import config
 torch.set_num_threads(4)
 
 model_name_or_path = ""
-if os.path.exists(config.model_path):
+if os.path.exists(config.model_path if config.model_path is not None else ""):
     model_name_or_path = config.model_path
 else:
     model_name_or_path = "clip-ViT-B-32"
