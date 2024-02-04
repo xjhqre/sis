@@ -58,4 +58,4 @@ https://huggingface.co/sentence-transformers/clip-ViT-B-32/tree/main
 
 > 镜像打包指令：docker build . -t xjhqre/sis:v1.0
 >
-> 镜像大小大约四个多G，容器运行内存大约1.5G
+> 镜像大小大约四个多G，容器运行内存大约1.8G
