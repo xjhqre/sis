@@ -21,8 +21,6 @@ app.config['JSON_AS_ASCII'] = False
 
 # es连接
 es = Elasticsearch([{'host': config.elasticsearch_url, 'port': config.elasticsearch_port}], timeout=10000)
-print(config.elasticsearch_url)
-print(config.elasticsearch_port)
 
 # 检查是否成功连接
 if es.ping():
