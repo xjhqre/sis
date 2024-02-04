@@ -10,6 +10,8 @@
 
 elasticsearch 索引构建请参考 elasticsearch.txt 文件
 
+运行内存大约1.8G
+
 ## 使用说明
 
 1、在启动配置中添加以下五个参数
