@@ -11,7 +11,12 @@ import config
 
 torch.set_num_threads(4)
 
-model = SentenceTransformer("clip-ViT-B-32")
+model_name_or_path = ""
+if os.path.exists(config.model_path):
+    model_name_or_path = config.model_path
+else:
+    model_name_or_path = "clip-ViT-B-32"
+model = SentenceTransformer(model_name_or_path)
 
 
 # 提取特征方法

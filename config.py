@@ -30,5 +30,8 @@ bucket = "xjhqre-bbs"
 folder = 'test/'
 pic_oss_url = "https://xjhqre-bbs.oss-cn-hangzhou.aliyuncs.com/" + folder
 
+# 模型地址
+model_path = os.getenv("model_path")
+
 if __name__ == '__main__':
     pass
