@@ -10,7 +10,6 @@ from elasticsearch import Elasticsearch
 from flask import Flask, request, render_template
 
 import config
-import sentence_transformer_utils
 
 '''
     以图搜图服务
