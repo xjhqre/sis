@@ -32,7 +32,7 @@ elasticsearch 索引构建请参考 elasticsearch.txt 文件
 
 ## docker
 
-1、修改Dockerfile文件
+1、修改Dockerfile文件，设置自己的环境变量
 
 2、打包镜像
 
