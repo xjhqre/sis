@@ -18,6 +18,8 @@ else:
     model_name_or_path = "clip-ViT-B-32"
 model = SentenceTransformer(model_name_or_path)
 
+es = Elasticsearch([{'host': config.elasticsearch_url, 'port': config.elasticsearch_port}], timeout=3600)
+
 
 # 提取特征方法
 def extract(img_path):
@@ -26,12 +28,6 @@ def extract(img_path):
     img.close()
     return emb
 
-
-'''
-    提取本地图片特征向量上传阿里云OSS
-'''
-
-es = Elasticsearch([{'host': config.elasticsearch_url, 'port': config.elasticsearch_port}], timeout=3600)
 
 errorImg = []  # 存放提取错误的图片路径
 errorPath = "static/error/"
@@ -48,6 +44,7 @@ def moveFile(srcfile, dstPath):  # 移动函数
         print("move %s -> %s" % (srcfile, dstPath + fname))
 
 
+# 扫描本地文件夹图片，提取特征上传es
 if __name__ == '__main__':
     trainPath = glob.glob(config.train_pic_path)  # 被检索的图片路径
     cnt = 0
