@@ -5,28 +5,28 @@ import shutil
 import torch
 from PIL import Image
 from elasticsearch import Elasticsearch
-from sentence_transformers import SentenceTransformer
+from transformers import CLIPModel, CLIPProcessor
 
 import config
-
-torch.set_num_threads(4)
 
 model_name_or_path = ""
 if os.path.exists(config.model_path if config.model_path is not None else ""):
     model_name_or_path = config.model_path
 else:
-    model_name_or_path = "clip-ViT-B-32"
-model = SentenceTransformer(model_name_or_path)
+    model_name_or_path = "openai/clip-vit-base-patch32"
+model = CLIPModel.from_pretrained(model_name_or_path)
+processor = CLIPProcessor.from_pretrained(model_name_or_path)
 
 es = Elasticsearch([{'host': config.elasticsearch_url, 'port': config.elasticsearch_port}], timeout=3600)
 
 
 # 提取特征方法
 def extract(img_path):
-    img = Image.open(img_path)
-    emb = model.encode([img], batch_size=1, convert_to_tensor=False, show_progress_bar=False)
-    img.close()
-    return emb
+    inputs = processor(text=None, images=Image.open(img_path), return_tensors="pt", padding=True)
+    # 嵌入图像
+    with torch.no_grad():
+        image_features = model.get_image_features(**inputs)
+    return image_features
 
 
 errorImg = []  # 存放提取错误的图片路径

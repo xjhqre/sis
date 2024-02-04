@@ -6,24 +6,19 @@ import numpy as np
 # -*- coding: utf-8 -*-
 import oss2
 from PIL import Image
-from elasticsearch import Elasticsearch
 from flask import Flask, request, render_template
 
 import config
-import sentence_transformer_utils
+import openai_utils
 
 '''
     以图搜图服务
 '''
-
 app = Flask(__name__)
 app.config['JSON_AS_ASCII'] = False
 
-# es连接
-es = Elasticsearch([{'host': config.elasticsearch_url, 'port': config.elasticsearch_port}], timeout=10000)
-
 # 检查是否成功连接
-if es.ping():
+if openai_utils.es.ping():
     print("elasticsearch连接成功")
 else:
     print("elasticsearch连接失败")
@@ -38,9 +33,7 @@ bucket = oss2.Bucket(auth, config.EndPoint, config.bucket)
 
 
 def feature_search(query):
-    global es
-    print(query.size)
-    results = es.search(
+    results = openai_utils.es.search(
         index=config.elasticsearch_index,
         body={
             "size": config.result_count,
@@ -99,7 +92,7 @@ def search():
         img.save(uploaded_img_path)
 
         # Run search
-        query = sentence_transformer_utils.extract(uploaded_img_path)
+        query = openai_utils.extract(uploaded_img_path)
         query = np.array(query).flatten()
         answers = feature_search(query)
 
@@ -130,7 +123,7 @@ def upload():
             # print(uploaded_img_path)
             img.save(uploaded_img_path)
 
-            feature = sentence_transformer_utils.extract(uploaded_img_path)
+            feature = openai_utils.extract(uploaded_img_path)
             feature = np.array(feature).flatten()
 
             # 上传到OSS，返回图片地址   test前不能加 /
@@ -140,7 +133,7 @@ def upload():
 
             # 上传es
             doc = {'name': name, 'feature': feature, 'url': imgUrl}
-            es.index(config.elasticsearch_index, body=doc)  # 保存到elasticsearch
+            openai_utils.es.index(config.elasticsearch_index, body=doc)  # 保存到elasticsearch
 
             # 删除本地图片
             if os.path.exists(uploaded_img_path):
