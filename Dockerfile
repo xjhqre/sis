@@ -26,6 +26,7 @@ ENV AccessKeyId 你的AccessKeyId
 ENV AccessKeySecret 你的AccessKeySecret
 ENV elasticsearch_url 你的elasticsearch_url
 ENV elasticsearch_port 9200
+ENV model_path test
 
 # Expose the port
 EXPOSE 5000
