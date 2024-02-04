@@ -32,13 +32,15 @@ elasticsearch 索引构建请参考 elasticsearch.txt 文件
 
 ## docker
 
-1、构建镜像
+1、修改Dockerfile文件
+
+2、打包镜像
 
 ```shell
 docker build . -t xjhqre/sis:v1.0
 ```
 
-2、运行容器
+3、运行容器
 
 ```shell
 docker run -d -p 5000:5000 --name sis xjhqre/sis:v1.0
