@@ -15,13 +15,6 @@ COPY --from=builder /usr/local/bin/ /usr/local/bin/
 
 COPY . .
 
-# 设置环境变量
-ENV AccessKeyId 你的AccessKeyId
-ENV AccessKeySecret 你的AccessKeySecret
-ENV elasticsearch_url 你的elasticsearch_url
-ENV elasticsearch_port 9200
-ENV model_path test
-
 EXPOSE 5000
 
 CMD ["python", "api_service.py"]

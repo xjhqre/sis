@@ -32,22 +32,29 @@ elasticsearch 索引构建请参考 elasticsearch.txt 文件
 
 ## docker
 
-1、修改Dockerfile文件，设置自己的环境变量
+### 运行步骤
 
-2、打包镜像
-
-```shell
-docker build . -t xjhqre/sis:v1.0
-```
-
-3、运行容器
+1、拉取镜像
 
 ```shell
-docker run -d -p 5000:5000 --name sis xjhqre/sis:v1.0
+docker pull xjhqre/sis:v1.0
 ```
 
-如果运行后报错模型下载不了，可以手动到
+2、运行容器
+
+```shell
+docker run -d -p 5000:5000 \
+-e AccessKeyId=你的AccessKeyId \
+-e AccessKeySecret=你的AccessKeySecret \
+-e elasticsearch_url=你的elasticsearch_url \
+-e elasticsearch_port=9200 \
+-e model_path=你的模型地址(可选) \
+--name sis xjhqre/sis:v1.0
+```
+
+如果运行后报错模型下载不了，则在run指令中加上model_path参数，手动到
 https://huggingface.co/sentence-transformers/clip-ViT-B-32/tree/main
-下载所有文件，将文件夹复制到docker容器中，地址与model_path对应
+下载所有文件，将文件夹复制到docker容器中，地址与model_path对应，例如-e model_path=/opt/model
 
+> 镜像打包指令：docker build . -t xjhqre/sis:v1.0
 > 镜像大小大约四个多G，容器运行内存大约1.5G
