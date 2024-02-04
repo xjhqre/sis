@@ -1,6 +1,5 @@
 aliyun-python-sdk-core==2.14.0
 aliyun-python-sdk-kms==2.16.2
-certifi @ file:///C:/b/abs_85o_6fm0se/croot/certifi_1671487778835/work/certifi
 cffi==1.15.1
 charset-normalizer==3.3.2
 click==8.1.7
