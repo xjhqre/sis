@@ -5,7 +5,7 @@ PUT imgsearch
     "properties": {
       "feature": {
         "type": "dense_vector",
-        "dims": 1024
+        "dims": 512
       },
       "url": {
         "type": "keyword"
