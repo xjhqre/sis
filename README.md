@@ -56,6 +56,8 @@ docker run -d -p 5000:5000 \
 --name sis xjhqre/sis:v1.0
 ```
 
+3、访问 [127.0.0.1:5000](127.0.0.1:5000)
+
 如果运行后报错模型下载不了，则在run指令中加上model_path参数，手动到
 https://huggingface.co/sentence-transformers/clip-ViT-B-32/tree/main
 下载所有文件，将文件夹复制到docker容器中，地址与model_path对应，例如-e model_path=/opt/model
