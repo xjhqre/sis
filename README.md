@@ -18,6 +18,9 @@ elasticsearch 索引构建请参考 elasticsearch.txt 文件
 
 * AccessKeyId：必填
 * AccessKeySecret：必填
+* EndPoint：必填
+* bucket：必填
+* elasticsearch_index：索引名称(必填)
 * elasticsearch_url：elasticsearch地址（必填）
 * elasticsearch_port：elasticsearch端口（必填）
 * model_path：模型地址（可选）
@@ -52,7 +55,10 @@ docker build . -t xjhqre/sis:v1.0
 docker run -d -p 5000:5000 \
 -e AccessKeyId=你的AccessKeyId \
 -e AccessKeySecret=你的AccessKeySecret \
+-e EndPoint=你的EndPoint \
+-e bucket=你的bucket \
 -e elasticsearch_url=你的elasticsearch_url \
+-e elasticsearch_index=你的elasticsearch_index \
 -e elasticsearch_port=9200 \
 -e model_path=你的模型地址(可选) \
 --name sis xjhqre/sis:v1.0

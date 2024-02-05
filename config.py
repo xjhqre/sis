@@ -5,10 +5,9 @@ import os
 
 root_path = os.path.dirname(os.path.abspath(__file__))
 
+# 批量提取图片路径
 train_pic_path = 'F:/ACG/出处归档/*'
-# train_pic_path = './static/img/*'
 
-# pic_url = "./static/img/"
 pic_url = "https://chuchu-xjhqre.oss-cn-hangzhou.aliyuncs.com/img/"
 
 # 可搜索的图片类型
@@ -18,17 +17,15 @@ types = [".jpg", ".jpeg", ".gif", ".png", ".JPG", ".JPEG", ".GIF", ".PNG"]
 result_count = 30
 
 # elasticsearch
-elasticsearch_index = "imgsearch"
+elasticsearch_index = os.getenv("elasticsearch_index")
 elasticsearch_url = os.getenv("elasticsearch_url")
 elasticsearch_port = os.getenv("elasticsearch_port")
 
 # OSS
 AccessKeyId = os.getenv("AccessKeyId")
 AccessKeySecret = os.getenv("AccessKeySecret")
-EndPoint = "oss-cn-hangzhou.aliyuncs.com"
-bucket = "xjhqre-bbs"
-folder = 'test/'
-pic_oss_url = "https://xjhqre-bbs.oss-cn-hangzhou.aliyuncs.com/" + folder
+EndPoint = os.getenv("EndPoint")
+bucket = os.getenv("bucket")
 
 # 模型地址
 model_path = os.getenv("model_path")
