@@ -14,7 +14,7 @@ elasticsearch 索引构建请参考 elasticsearch.txt 文件
 
 ## 使用说明
 
-1、在启动配置中添加以下五个参数
+1、在启动配置中添加以下几个参数
 
 * AccessKeyId：必填
 * AccessKeySecret：必填
