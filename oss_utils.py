@@ -26,4 +26,4 @@ class OssUtils:
         return self.bucket.put_object_from_file(key, filename).resp
 
 
-oss_utils = OssUtils()
+ou = OssUtils()

@@ -36,7 +36,7 @@ def search():
         img.save(uploaded_img_path)
 
         query = feature_extractor.fe.extract(uploaded_img_path)
-        query = np.array(query).flatten()
+        print(query)
         answers = es_utils.es.feature_search(query)
 
         # 删除本地图片
@@ -68,7 +68,7 @@ def upload():
             feature = np.array(feature).flatten()
 
             # 上传到OSS，返回图片地址   test前不能加 /
-            resp = oss_utils.oss_utils.upload("test/" + name, config.root_path + '/static/uploaded/' + name).resp
+            resp = oss_utils.ou.upload("test/" + name, config.root_path + '/static/uploaded/' + name).resp
             img_url = resp.response.url.replace("%2F", "/")
 
             # 上传es

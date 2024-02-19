@@ -6,7 +6,7 @@
 </head>
 <body>
 <div class="container">
-    <h1>Simple image search engine</h1>
+    <h1>搜图图片</h1>
     <form action="/search" method="POST" enctype="multipart/form-data">
         <input type="file" name="query_img"><br>
         <input type="submit">
@@ -17,11 +17,11 @@
         <br>
         <input type="submit">
     </form>
-    <h2>Query:</h2>
-    {% if query_path %}
-        <img src="{{ query_path }}" width="300px">
-    {% endif %}
-    <h2>Results:</h2>
+    {#    <h2>Query:</h2>#}
+    {#    {% if query_path %}#}
+    {#        <img src="{{ query_path }}" width="300px">#}
+    {#    {% endif %}#}
+    <h2>结果:</h2>
     {% for score in scores %}
         <figure style="float: left; margin-right: 20px; margin-bottom: 20px;">
             <img src="{{ score[0] }}" height="200px">

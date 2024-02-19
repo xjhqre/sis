@@ -15,7 +15,7 @@ class EsUtils:
             print("elasticsearch连接失败")
             sys.exit()
 
-    def index(self, index, doc):
+    def index(self, index, body):
         """
         上传数据到 es 索引。
         参数:
@@ -25,9 +25,9 @@ class EsUtils:
         返回值:
             int: 两个数字的和。
         """
-        self.es.index(config.elasticsearch_index, body=doc)  # 保存到elasticsearch
+        self.es.index(config.elasticsearch_index, body=body)  # 保存到elasticsearch
 
-    def feature_search(self, query, result_count):
+    def feature_search(self, query, result_count=config.result_count):
         """
         相似图片向量查询
         参数:
